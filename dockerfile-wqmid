@@ -1,0 +1,3 @@
+FROM openjdk:8u312-jdk
+
+CMD java -jar /usr/src/wqmid-1.0.0.jar

@@ -1,0 +1,60 @@
+version: '3'
+services:
+  wqmid:
+    build:
+      context: ./
+      dockerfile: dockerfile-wqmid
+    container_name: wqmid
+    depends_on:
+      - nginx
+      - redis
+      - mysql
+      - xxl-job-admin
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./wqmid:/usr/src/
+
+  nginx:
+    image: nginx
+    restart: always
+    volumes:
+      - ./nginx:/usr/share/nginx/html
+
+  xxl-job-admin:
+    image: xuxueli/xxl-job-admin:2.1.2
+    restart: always
+    container_name: job-admin
+    volumes:
+      - ./data/xxl-job-admin:/data/applogs
+
+  redis:
+    image: redis:5.0.14
+    restart: always
+    volumes:
+      - ./data/redis:/data
+
+  mysql:
+    image: mysql:8.0.17
+    restart: always
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+
+  srs:
+    image: ossrs:srs
+    restart: always
+    ports:
+      - 1935:1935
+      - 1985:1985
+      - 8000:8000
+      - 8080:8080
+    environment:
+      - CANDIDATE=$CANDIDATE
+
+  iserver:
+    image: supermap/iserver:10.2.1
+    restart: always
+    ports:
+      - 8090:8090
+    volumes:
+      - ./data/iserver:/opt/iserverOPTs

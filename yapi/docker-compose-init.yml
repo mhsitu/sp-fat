@@ -1,0 +1,35 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo:4
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=yapi
+      - MONGO_INITDB_ROOT_USERNAME=yapipro
+      - MONGO_INITDB_ROOT_PASSWORD=yapipro1024
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-monogo.js:ro
+      #- ./mongo-data:/data/db
+
+    command: [ "--auth" ]
+    networks:
+      - yapi
+
+  yapi:
+    image: yapipro/yapi:1.9.5
+    restart: always
+    depends_on:
+      - mongodb
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config.json:/yapi/config.json
+    command: server/install.js
+    networks:
+      - yapi
+
+networks:
+  yapi:
+    driver: bridge
